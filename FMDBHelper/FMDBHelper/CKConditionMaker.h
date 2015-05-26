@@ -13,11 +13,16 @@ typedef NS_ENUM(NSUInteger, CKConditionMakerOrderByType) {
     CKOrderByDesc = 0,
 };
 
-@interface CKConditionMaker : NSObject
+@interface CKBaseMaker : NSObject
 
-@property (nonatomic, copy) NSString *sqlCondition;
 + (instancetype)newWithModelClass:(Class)cls;
 - (instancetype)initWithModelClass:(Class)cls;
+
+@end
+
+@interface CKConditionMaker : CKBaseMaker
+
+@property (nonatomic, copy) NSString *sqlCondition;
 
 - (CKConditionMaker * (^)(NSString *))where;
 - (CKConditionMaker * (^)(NSString *))and;
@@ -26,6 +31,19 @@ typedef NS_ENUM(NSUInteger, CKConditionMakerOrderByType) {
 - (CKConditionMaker * (^)(NSString *orderKey, CKConditionMakerOrderByType orderType))orderBy;
 - (CKConditionMaker * (^)(NSInteger location, NSInteger count))limit;
 
+@end
 
+@interface CKQueryMaker : CKBaseMaker
+
+@property (nonatomic, strong) NSMutableDictionary *sqlQueryDict;
+
+- (CKQueryMaker * (^)(NSString *))count;
+- (CKQueryMaker * (^)(NSString *,NSString *))max;
+- (CKQueryMaker *(^)(NSString *,NSString *))min;
+- (CKQueryMaker *(^)(NSString *,NSString *))avg;
+- (CKQueryMaker *(^)(NSString *,NSString *))sum;
+- (CKQueryMaker *(^)(NSString *,NSString *))upper;
+- (CKQueryMaker *(^)(NSString *,NSString *))lower;
+- (CKQueryMaker *(^)(NSString *,NSString *))length;
 
 @end

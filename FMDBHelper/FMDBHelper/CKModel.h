@@ -7,7 +7,9 @@
 //
 
 #import "Mantle.h"
-#import "CKConditionMaker.h"
+
+@class CKConditionMaker;
+@class CKQueryMaker;
 
 static const NSString *kCKModelIndexAsc;
 static const NSString *kCKModelIndexDesc;
@@ -87,7 +89,7 @@ static const NSString *kCKModelIndexDesc;
 #pragma mark
 #pragma mark - Select
 + (NSArray *)queryWithConditions:(id (^)(CKConditionMaker * maker))block;
-
++ (NSDictionary *)query:(id (^)(CKQueryMaker* maker))aQuery withConditions:(id (^)(CKConditionMaker * maker))block;
 #pragma mark
 #pragma mark - insert
 + (void)insertWithArray:(NSArray *)array;

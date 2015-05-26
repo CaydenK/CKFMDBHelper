@@ -9,13 +9,13 @@
 #import "CKConditionMaker.h"
 #import "NSObject+CKProperty.h"
 
-@interface CKConditionMaker ()
+@interface CKBaseMaker ()
 
 @property (nonatomic, copy) Class cls;
 
 @end
 
-@implementation CKConditionMaker
+@implementation CKBaseMaker
 
 + (instancetype)newWithModelClass:(Class)cls{
     CKConditionMaker *maker = [self new];
@@ -29,6 +29,33 @@
     }
     return self;
 }
+
+NSString *sqlKeywordsReplace(NSString *item, Class cls){
+    NSString *value = item.copy;
+    NSArray *propertyArray = [cls propertyArray];
+    for (NSString *property in propertyArray) {
+        NSRange range = [value rangeOfString:property];
+        NSRange range2 = [value rangeOfString:[NSString stringWithFormat:@"[%@]",property]];
+        if (range.length > 0 && range2.length == 0) {
+            value = [value stringByReplacingCharactersInRange:range withString:[NSString stringWithFormat:@"[%@]",property]];
+        }
+    }
+    return value;
+}
+
+NSString *conditionMakerMap(CKConditionMakerOrderByType type){
+    if (type == CKOrderByAsc) {
+        return @"asc";
+    }
+    else{
+        return @"desc";
+    }
+}
+
+@end
+
+@implementation CKConditionMaker
+
 - (CKConditionMaker * (^)(NSString *))where{
     return ^CKConditionMaker *(NSString *item) {
         self.sqlCondition = [self.sqlCondition stringByAppendingFormat:@" where %@",sqlKeywordsReplace(item, self.cls)];
@@ -66,28 +93,6 @@
     };
 }
 
-NSString *sqlKeywordsReplace(NSString *item, Class cls){
-    NSString *value = item.copy;
-    NSArray *propertyArray = [cls propertyArray];
-    for (NSString *property in propertyArray) {
-        NSRange range = [value rangeOfString:property];
-        NSRange range2 = [value rangeOfString:[NSString stringWithFormat:@"[%@]",property]];
-        if (range.length > 0 && range2.length == 0) {
-            value = [value stringByReplacingCharactersInRange:range withString:[NSString stringWithFormat:@"[%@]",property]];
-        }
-    }
-    return value;
-}
-
-NSString *conditionMakerMap(CKConditionMakerOrderByType type){
-    if (type == CKOrderByAsc) {
-        return @"asc";
-    }
-    else{
-        return @"desc";
-    }
-}
-
 #pragma mark
 #pragma mark - Get
 - (NSString *)sqlCondition{
@@ -98,3 +103,67 @@ NSString *conditionMakerMap(CKConditionMakerOrderByType type){
 }
 
 @end
+
+@implementation CKQueryMaker
+
+- (CKQueryMaker * (^)(NSString *))count{
+    return ^CKQueryMaker *(NSString *alias) {
+        [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:@"count(0)"];
+        return self;
+    };
+}
+- (CKQueryMaker *(^)(NSString *,NSString *))max{
+    return ^CKQueryMaker *(NSString *column,NSString *alias) {
+        [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:[NSString stringWithFormat:@"max(%@)",sqlKeywordsReplace(column, self.cls)]];
+        return self;
+    };
+}
+- (CKQueryMaker *(^)(NSString *,NSString *))min{
+    return ^CKQueryMaker *(NSString *column,NSString *alias) {
+        [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:[NSString stringWithFormat:@"min(%@)",sqlKeywordsReplace(column, self.cls)]];
+        return self;
+    };
+}
+- (CKQueryMaker *(^)(NSString *,NSString *))avg{
+    return ^CKQueryMaker *(NSString *column,NSString *alias) {
+        [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:[NSString stringWithFormat:@"avg(%@)",sqlKeywordsReplace(column, self.cls)]];
+        return self;
+    };
+}
+- (CKQueryMaker *(^)(NSString *,NSString *))sum{
+    return ^CKQueryMaker *(NSString *column,NSString *alias) {
+        [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:[NSString stringWithFormat:@"sum(%@)",sqlKeywordsReplace(column, self.cls)]];
+        return self;
+    };
+}
+- (CKQueryMaker *(^)(NSString *,NSString *))upper{
+    return ^CKQueryMaker *(NSString *column,NSString *alias) {
+        [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:[NSString stringWithFormat:@"upper(%@)",sqlKeywordsReplace(column, self.cls)]];
+        return self;
+    };
+}
+- (CKQueryMaker *(^)(NSString *,NSString *))lower{
+    return ^CKQueryMaker *(NSString *column,NSString *alias) {
+        [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:[NSString stringWithFormat:@"min(%@)",sqlKeywordsReplace(column, self.cls)]];
+        return self;
+    };
+}
+- (CKQueryMaker *(^)(NSString *,NSString *))length{
+    return ^CKQueryMaker *(NSString *column,NSString *alias) {
+        [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:[NSString stringWithFormat:@"length(%@)",sqlKeywordsReplace(column, self.cls)]];
+        return self;
+    };
+}
+
+#pragma mark
+#pragma mark - Get
+- (NSMutableDictionary *)sqlQueryDict{
+    if (_sqlQueryDict == nil) {
+        _sqlQueryDict = @{}.mutableCopy;
+    }
+    return _sqlQueryDict;
+}
+
+@end
+
+

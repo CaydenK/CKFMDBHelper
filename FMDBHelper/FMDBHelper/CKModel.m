@@ -122,7 +122,7 @@ static const NSString *kCKModelIndexDesc = @"desc";
 /*
  *拼装好SQL 语句，并传入Model类型就能完成查询
  */
-+ (NSMutableArray *)queryListWithSQL:(NSString *)sql{
++ (NSMutableArray *)queryArrayWithSQL:(NSString *)sql{
     FMDatabase *db = [[CKManager shareManager] databaseWithName:CKDBNAME];
     if (![db open]) {return nil;}
     FMResultSet *rs=[db executeQuery:sql];
@@ -131,13 +131,31 @@ static const NSString *kCKModelIndexDesc = @"desc";
     while ([rs next]) {
         id item=[[[self class] alloc]init];
         for ( NSString *key in propertys) {
-            [item setValue:[rs stringForColumn:key] forKey:key];
+            [item setValue:[rs stringForColumn:key]?:@"" forKey:key];
         }
         [result addObject:item];
     }
     [db close];
     return result;
 }
++ (NSDictionary *)queryDict:(NSDictionary *)aQueryDict withSQL:(NSString *)sql{
+    FMDatabase *db = [[CKManager shareManager] databaseWithName:CKDBNAME];
+    if (![db open]) {return nil;}
+    FMResultSet *rs=[db executeQuery:sql];
+    NSArray *keys=aQueryDict.allKeys;
+    NSMutableDictionary *result=@{}.mutableCopy;
+    while ([rs next]) {
+        for ( NSString *key in keys) {
+            NSString *alias = [aQueryDict objectForKey:key];
+            NSString *finalKey = alias.length>0?alias:key;
+            [result setObject:[rs stringForColumn:finalKey]?:@"" forKey:finalKey];
+        }
+    }
+    [db close];
+    return result;
+}
+
+
 /*
  *拼装好SQL 语句，并传入Model类型就能完成查询
  */
@@ -150,7 +168,7 @@ static const NSString *kCKModelIndexDesc = @"desc";
     while ([rs next]) {
         item=[[self alloc]init];
         for ( NSString *key in propertys) {
-            [item setValue:[rs stringForColumn:key] forKey:key];
+            [item setValue:[rs stringForColumn:key]?:@"" forKey:key];
         }
     }
     [db close];
@@ -311,7 +329,30 @@ static const NSString *kCKModelIndexDesc = @"desc";
     }
     NSString *tableName = NSStringFromClass([self class]);
     NSString *sql = [NSString stringWithFormat:@"select * from '%@' %@",tableName,sqlCondition?:@""];
-    return [self queryListWithSQL:sql];
+    return [self queryArrayWithSQL:sql];
+}
++ (NSDictionary *)query:(id (^)(CKQueryMaker* maker))aQuery withConditions:(id (^)(CKConditionMaker * maker))block{
+    NSString *sqlQuery,*sqlCondition;
+    NSDictionary *sqlQueryDict;
+    if (aQuery) {
+        CKQueryMaker *make = aQuery([CKQueryMaker newWithModelClass:[self class]]);
+        sqlQueryDict = make.sqlQueryDict;
+        NSMutableArray *tmpQueryArray = @[].mutableCopy;
+        NSArray *keys = sqlQueryDict.allKeys;
+        for (NSString *key in keys) {
+            NSString *value = sqlQueryDict[key];
+            NSString *query = [NSString stringWithFormat:@"%@ %@",key,value];
+            [tmpQueryArray addObject:query];
+        }
+        sqlQuery = [tmpQueryArray componentsJoinedByString:@","];
+    }
+    if (block) {
+        CKConditionMaker *make = block([CKConditionMaker newWithModelClass:[self class]]);
+        sqlCondition = make.sqlCondition;
+    }
+    NSString *tableName = NSStringFromClass([self class]);
+    NSString *sql = [NSString stringWithFormat:@"select %@ from '%@' %@",sqlQuery?:@"*",tableName,sqlCondition?:@""];
+    return [self queryDict:sqlQueryDict withSQL:sql];
 }
 
 #pragma mark
