@@ -6,7 +6,7 @@
 //  Copyright (c) 2015年 tcyx. All rights reserved.
 //
 
-#import "Mantle.h"
+#import <Mantle.h>
 
 @class CKConditionMaker;
 @class CKQueryMaker;
