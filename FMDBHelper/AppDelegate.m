@@ -21,10 +21,10 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
 //    [CKTestModel createTable];
-//    [CKTestModel createIndex:@"testIndex" Unique:YES Columns:@"index",@"name",nil];
+//    [CKTestModel createIndex:@"testIndex" unique:YES columns:@"index",@"name",nil];
 //    [CKTestModel dropIndex:@"testIndex"];
-//    [CKTestModel createIndex:@"testIndex" Unique:YES ColumnDict:@{@"index":kCKModelIndexAsc,@"name":kCKModelIndexDesc}];
-//    [CKTestModel createIndex:@"testIndex" Unique:YES Columns:@"index",@"lastName",nil];
+//    [CKTestModel createIndex:@"testIndex" unique:YES columnDict:@{@"index":kCKModelIndexAsc,@"name":kCKModelIndexDesc}];
+//    [CKTestModel createIndex:@"testIndex" unique:YES columns:@"index",@"lastName",nil];
 //    [CKTestModel updateColumn];
     
     NSArray *array = [CKTestModel queryWithConditions:^id(CKConditionMaker *maker) {
@@ -36,6 +36,7 @@
     model1.index = 1;
     model1.name = @"222";
     model1.lastName = @"333";
+    [model1 insert];
     [CKTestModel insertWithArray:@[model1]];
     NSArray *array2 = [CKTestModel queryWithConditions:NULL];
     NSLog(@"%@",array2);
