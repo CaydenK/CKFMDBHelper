@@ -41,7 +41,7 @@
     NSLog(@"%@",array2);
     
     model1.name = @"修改后的name";
-    [CKTestModel updateWithArray:@[model1] Conditions:^id(CKConditionMaker *maker) {
+    [CKTestModel updateWithArray:@[model1] conditions:^id(CKConditionMaker *maker) {
         return maker.where(@"[index] = 1").and(@"lastName = 333");
     }];
     NSArray *array3 = [CKTestModel queryWithConditions:NULL];

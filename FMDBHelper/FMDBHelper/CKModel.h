@@ -38,7 +38,7 @@ static const NSString *kCKModelIndexDesc;
  *
  *  @return 是否成功
  */
-+ (void)createIndex:(NSString *)indexName Unique:(BOOL)isUnique Columns:(NSString *)column,...;
++ (void)createIndex:(NSString *)indexName unique:(BOOL)isUnique columns:(NSString *)column,...;
 /**
  *  创建索引
  *
@@ -49,7 +49,7 @@ static const NSString *kCKModelIndexDesc;
  *
  *  @return 是否成功
  */
-+ (void)createIndex:(NSString *)indexName Unique:(BOOL)isUnique ColumnDict:(NSDictionary *)aColumnDict;
++ (void)createIndex:(NSString *)indexName unique:(BOOL)isUnique columnDict:(NSDictionary *)aColumnDict;
 
 #pragma mark - Drop
 /**
@@ -97,7 +97,7 @@ static const NSString *kCKModelIndexDesc;
 
 #pragma mark
 #pragma mark - update
-+ (void)updateWithArray:(NSArray *)array Conditions:(id (^)(CKConditionMaker * maker))block;
++ (void)updateWithArray:(NSArray *)array conditions:(id (^)(CKConditionMaker * maker))block;
 - (void)updateWithConditions:(id (^)(CKConditionMaker * maker))block;
 
 #pragma mark

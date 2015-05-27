@@ -205,7 +205,7 @@ static const NSString *kCKModelIndexDesc = @"desc";
  *
  *  @return 是否成功
  */
-+ (void)createIndex:(NSString *)indexName Unique:(BOOL)isUnique Columns:(NSString *)column,...{
++ (void)createIndex:(NSString *)indexName unique:(BOOL)isUnique columns:(NSString *)column,...{
     if (column == nil) {return;}
     NSString *tableName = NSStringFromClass([self class]);
     NSMutableString *sql = [NSMutableString stringWithFormat:@"create %@ index '%@' on '%@' (",isUnique?@"unique":@"",indexName,tableName];
@@ -234,7 +234,7 @@ static const NSString *kCKModelIndexDesc = @"desc";
  *
  *  @return 是否成功
  */
-+ (void)createIndex:(NSString *)indexName Unique:(BOOL)isUnique ColumnDict:(NSDictionary *)aColumnDict{
++ (void)createIndex:(NSString *)indexName unique:(BOOL)isUnique columnDict:(NSDictionary *)aColumnDict{
     if (aColumnDict.count == 0) {return;}
     NSString *tableName = NSStringFromClass([self class]);
     NSMutableString *sql = [NSMutableString stringWithFormat:@"create %@ index '%@' on '%@' (",isUnique?@"unique":@"",indexName,tableName];
@@ -372,7 +372,7 @@ static const NSString *kCKModelIndexDesc = @"desc";
 #pragma mark
 #pragma mark - update
 
-+ (void)updateWithArray:(NSArray *)array Conditions:(id (^)(CKConditionMaker * maker))block{
++ (void)updateWithArray:(NSArray *)array conditions:(id (^)(CKConditionMaker * maker))block{
     NSString *sqlCondition;
     if (block) {
         CKConditionMaker *make = block([CKConditionMaker newWithModelClass:[self class]]);
