@@ -53,12 +53,12 @@
     NSArray *array4 = [CKTestModel queryWithConditions:NULL];
     NSLog(@"%@",array4);
     
-    NSDictionary *dict = [CKTestModel query:^id(CKQueryMaker *maker) {
+    NSArray *_array = [CKTestModel query:^id(CKQueryMaker *maker) {
         return maker.count(nil).max(@"index",nil).min(@"lastName",nil);
     } withConditions:^id(CKConditionMaker *maker) {
         return maker.where(@"index = 1").and(@"index = 1").orderBy(@"[index]",CKOrderByAsc).limit(0,1);
     }];
-    NSLog(@"%@",dict);
+    NSLog(@"%@",_array);
     
     [model1 delete];
     NSArray *array6 = [CKTestModel queryWithConditions:NULL];

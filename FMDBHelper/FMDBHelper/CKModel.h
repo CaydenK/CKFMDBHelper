@@ -11,7 +11,13 @@
 @class CKConditionMaker;
 @class CKQueryMaker;
 
+/**
+ *  正序
+ */
 static const NSString *kCKModelIndexAsc;
+/**
+ *  倒序
+ */
 static const NSString *kCKModelIndexDesc;
 
 /**
@@ -88,27 +94,82 @@ static const NSString *kCKModelIndexDesc;
 
 #pragma mark
 #pragma mark - Select
+/**
+ *  条件查询单表
+ *
+ *  @param block 查询条件
+ *
+ *  @return Model列表
+ */
 + (NSArray *)queryWithConditions:(id (^)(CKConditionMaker * maker))block;
-+ (NSDictionary *)query:(id (^)(CKQueryMaker* maker))aQuery withConditions:(id (^)(CKConditionMaker * maker))block;
+/**
+ *  函数查询（count()、max()等）
+ *
+ *  @param aQuery 函数语句
+ *  @param block  条件语句
+ *
+ *  @return 查询结果
+ */
++ (NSArray *)query:(id (^)(CKQueryMaker* maker))aQuery withConditions:(id (^)(CKConditionMaker * maker))block;
 #pragma mark
 #pragma mark - insert
+/**
+ *  多条数据插入
+ *
+ *  @param array 数据数组
+ */
 + (void)insertWithArray:(NSArray *)array;
+/**
+ *  单条数据插入
+ */
 - (void)insert;
 
 #pragma mark
 #pragma mark - update
+/**
+ *  多数据条件更新（可设置唯一索引做唯一标识）
+ *
+ *  @param array 数据数组
+ *  @param block 条件语句
+ */
 + (void)updateWithArray:(NSArray *)array conditions:(id (^)(CKConditionMaker * maker))block;
+/**
+ *  单条数据更新
+ *
+ *  @param block 条件语句
+ */
 - (void)updateWithConditions:(id (^)(CKConditionMaker * maker))block;
 
 #pragma mark
 #pragma mark - replace
+/**
+ *  有则更新/无则插入语句 （多条数据）
+ *
+ *  @param array 数据数组
+ */
 + (void)replaceWithArray:(NSArray *)array;
+/**
+ *  有则更新/无则插入语句 （单条数据）
+ */
 - (void)replace;
 
 #pragma mark
 #pragma mark - delete
+/**
+ *  删除多条数据（每个字段都唯一对应）
+ *
+ *  @param array 数据数组
+ */
 + (void)deleteWithArray:(NSArray *)array;
+/**
+ *  条件删除数据
+ *
+ *  @param block 条件语句
+ */
 + (void)deleteWithConditions:(id (^)(CKConditionMaker * maker))block;
+/**
+ *  单条数据删除
+ */
 - (void)delete;
 
 

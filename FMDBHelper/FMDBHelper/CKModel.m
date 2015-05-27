@@ -14,7 +14,13 @@
 #import "NSString+CKDB.h"
 
 
+/**
+ *  正序
+ */
 static const NSString *kCKModelIndexAsc = @"asc";
+/**
+ *  倒序
+ */
 static const NSString *kCKModelIndexDesc = @"desc";
 
 @interface CKModel ()
@@ -23,15 +29,90 @@ static const NSString *kCKModelIndexDesc = @"desc";
 
 @implementation CKModel
 
+#pragma mark
+#pragma mark - Query Update
+/*
+ *拼装好SQL 语句，就能完成查询
+ */
++ (NSMutableArray *)queryArrayWithSQL:(NSString *)sql{
+    FMDatabase *db = [[CKManager shareManager] databaseWithName:CKDBNAME];
+    if (![db open]) {return nil;}
+    FMResultSet *rs=[db executeQuery:sql];
+    NSArray *propertys=[self propertyArray];
+    NSMutableArray *result=[NSMutableArray array];
+    while ([rs next]) {
+        id item=[[[self class] alloc]init];
+        for ( NSString *key in propertys) {
+            [item setValue:[rs stringForColumn:key]?:@"" forKey:key];
+        }
+        [result addObject:item];
+    }
+    [db close];
+    return result;
+}
+/**
+ *  拼装好SQL 语句，并传入Model类型就能完成查询
+ *
+ *  @param aQueryDict 查询字典
+ *  @param sql        sql语句
+ *
+ *  @return 查询到的字典
+ */
++ (NSArray *)queryDict:(NSDictionary *)aQueryDict withSQL:(NSString *)sql{
+    FMDatabase *db = [[CKManager shareManager] databaseWithName:CKDBNAME];
+    if (![db open]) {return nil;}
+    FMResultSet *rs=[db executeQuery:sql];
+    NSArray *keys=aQueryDict.allKeys;
+    NSMutableArray *result = @[].mutableCopy;
+    while ([rs next]) {
+        NSMutableDictionary *resultDict=@{}.mutableCopy;
+        for ( NSString *key in keys) {
+            NSString *alias = [aQueryDict objectForKey:key];
+            NSString *finalKey = alias.length>0?alias:key;
+            [resultDict setObject:[rs stringForColumn:finalKey]?:@"" forKey:finalKey];
+        }
+        [result addObject:resultDict];
+    }
+    [db close];
+    return result;
+}
+
+/*
+ *拼装好SQL 语句，并传入Model类型就能完成查询
+ */
++ (id)queryWithSQL:(NSString *)sql{
+    FMDatabase *db = [[CKManager shareManager] databaseWithName:CKDBNAME];
+    if (![db open]) {return nil;}
+    FMResultSet *rs=[db executeQuery:sql];
+    NSArray *propertys=[self propertyArray];
+    id item;
+    while ([rs next]) {
+        item=[[self alloc]init];
+        for ( NSString *key in propertys) {
+            [item setValue:[rs stringForColumn:key]?:@"" forKey:key];
+        }
+    }
+    [db close];
+    return item;
+}
+
+/**
+ *  单sql语句更新
+ *
+ *  @param sql sql语句
+ */
 + (void)executeUpdateWithSql:(NSString *)sql{
     FMDatabaseQueue *queue = [[CKManager shareManager] databaseQueueWithName:CKDBNAME];
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         [db executeUpdate:sql];
     }];
 }
-
-+ (void)executeUpdateWithMuchSql:(NSArray *)sqls
-{
+/**
+ *  多sql语句更新
+ *
+ *  @param sqls sql语句数组
+ */
++ (void)executeUpdateWithMuchSql:(NSArray *)sqls{
     FMDatabaseQueue *queue = [[CKManager shareManager] databaseQueueWithName:CKDBNAME];
     // 如果要支持事务
     if (!queue) {return ;}
@@ -42,11 +123,11 @@ static const NSString *kCKModelIndexDesc = @"desc";
     }];
 }
 
-
+#pragma mark
+#pragma mark - get Sql
 /**
  *  replace语句拼装
  *
- *  @param item  Model
  *  @param table 表名称
  *
  *  @return replace语句
@@ -72,7 +153,6 @@ static const NSString *kCKModelIndexDesc = @"desc";
  *  insert语句拼装
  *
  *  @param item  Model
- *  @param table 表名称
  *
  *  @return insert语句
  */
@@ -93,7 +173,13 @@ static const NSString *kCKModelIndexDesc = @"desc";
     NSString *replaceSql=[NSString stringWithFormat:@"insert into %@ (%@ ) VALUES (%@)",tableName,columsStr,columnValueStr];
     return replaceSql;
 }
-
+/**
+ *  update语句拼装
+ *
+ *  @param table 表名称
+ *
+ *  @return update语句
+ */
 + (NSString *)updateSqlFromItem:(id)item{
     NSString *tableName = NSStringFromClass([self class]);
     NSArray *propertys=[item propertyArray];
@@ -106,7 +192,13 @@ static const NSString *kCKModelIndexDesc = @"desc";
     NSString *replaceSql=[NSString stringWithFormat:@"update %@ set %@",tableName,columnStr];
     return replaceSql;
 }
-
+/**
+ *  delete语句拼装
+ *
+ *  @param table 表名称
+ *
+ *  @return delete语句
+ */
 + (NSString *)deleteSqlFromItem:(id)item{
     NSString *tableName = NSStringFromClass([self class]);
     NSArray *propertys=[item propertyArray];
@@ -119,62 +211,6 @@ static const NSString *kCKModelIndexDesc = @"desc";
     NSString *replaceSql=[NSString stringWithFormat:@"delete from %@ where %@",tableName,columnStr];
     return replaceSql;
 }
-/*
- *拼装好SQL 语句，并传入Model类型就能完成查询
- */
-+ (NSMutableArray *)queryArrayWithSQL:(NSString *)sql{
-    FMDatabase *db = [[CKManager shareManager] databaseWithName:CKDBNAME];
-    if (![db open]) {return nil;}
-    FMResultSet *rs=[db executeQuery:sql];
-    NSArray *propertys=[self propertyArray];
-    NSMutableArray *result=[NSMutableArray array];
-    while ([rs next]) {
-        id item=[[[self class] alloc]init];
-        for ( NSString *key in propertys) {
-            [item setValue:[rs stringForColumn:key]?:@"" forKey:key];
-        }
-        [result addObject:item];
-    }
-    [db close];
-    return result;
-}
-+ (NSDictionary *)queryDict:(NSDictionary *)aQueryDict withSQL:(NSString *)sql{
-    FMDatabase *db = [[CKManager shareManager] databaseWithName:CKDBNAME];
-    if (![db open]) {return nil;}
-    FMResultSet *rs=[db executeQuery:sql];
-    NSArray *keys=aQueryDict.allKeys;
-    NSMutableDictionary *result=@{}.mutableCopy;
-    while ([rs next]) {
-        for ( NSString *key in keys) {
-            NSString *alias = [aQueryDict objectForKey:key];
-            NSString *finalKey = alias.length>0?alias:key;
-            [result setObject:[rs stringForColumn:finalKey]?:@"" forKey:finalKey];
-        }
-    }
-    [db close];
-    return result;
-}
-
-
-/*
- *拼装好SQL 语句，并传入Model类型就能完成查询
- */
-+ (id)queryWithSQL:(NSString *)sql{
-    FMDatabase *db = [[CKManager shareManager] databaseWithName:CKDBNAME];
-    if (![db open]) {return nil;}
-    FMResultSet *rs=[db executeQuery:sql];
-    NSArray *propertys=[self propertyArray];
-    id item;
-    while ([rs next]) {
-        item=[[self alloc]init];
-        for ( NSString *key in propertys) {
-            [item setValue:[rs stringForColumn:key]?:@"" forKey:key];
-        }
-    }
-    [db close];
-    return item;
-}
-
 
 #pragma mark
 #pragma mark - Create
@@ -321,6 +357,13 @@ static const NSString *kCKModelIndexDesc = @"desc";
 
 #pragma mark
 #pragma mark - Select
+/**
+ *  条件查询单表
+ *
+ *  @param block 查询条件
+ *
+ *  @return Model列表
+ */
 + (NSArray *)queryWithConditions:(id (^)(CKConditionMaker * maker))block{
     NSString *sqlCondition;
     if (block) {
@@ -331,7 +374,15 @@ static const NSString *kCKModelIndexDesc = @"desc";
     NSString *sql = [NSString stringWithFormat:@"select * from '%@' %@",tableName,sqlCondition?:@""];
     return [self queryArrayWithSQL:sql];
 }
-+ (NSDictionary *)query:(id (^)(CKQueryMaker* maker))aQuery withConditions:(id (^)(CKConditionMaker * maker))block{
+/**
+ *  函数查询（count()、max()等）
+ *
+ *  @param aQuery 函数语句
+ *  @param block  条件语句
+ *
+ *  @return 查询结果
+ */
++ (NSArray *)query:(id (^)(CKQueryMaker* maker))aQuery withConditions:(id (^)(CKConditionMaker * maker))block{
     NSString *sqlQuery,*sqlCondition;
     NSDictionary *sqlQueryDict;
     if (aQuery) {
@@ -357,6 +408,11 @@ static const NSString *kCKModelIndexDesc = @"desc";
 
 #pragma mark
 #pragma mark - insert
+/**
+ *  多条数据插入
+ *
+ *  @param array 数据数组
+ */
 + (void)insertWithArray:(NSArray *)array{
     NSMutableArray *sqls = @[].mutableCopy;
     for (id item in array) {
@@ -365,13 +421,21 @@ static const NSString *kCKModelIndexDesc = @"desc";
     }
     [self executeUpdateWithMuchSql:sqls];
 }
+/**
+ *  单条数据插入
+ */
 - (void)insert{
     NSString *sql = [[self class] insertSqlFromItem:self];
     [[self class] executeUpdateWithSql:sql];
 }
 #pragma mark
 #pragma mark - update
-
+/**
+ *  多数据条件更新（可设置唯一索引做唯一标识）
+ *
+ *  @param array 数据数组
+ *  @param block 条件语句
+ */
 + (void)updateWithArray:(NSArray *)array conditions:(id (^)(CKConditionMaker * maker))block{
     NSString *sqlCondition;
     if (block) {
@@ -386,6 +450,11 @@ static const NSString *kCKModelIndexDesc = @"desc";
     [self executeUpdateWithMuchSql:sqls];
 
 }
+/**
+ *  单条数据更新
+ *
+ *  @param block 条件语句
+ */
 - (void)updateWithConditions:(id (^)(CKConditionMaker * maker))block{
     NSString *sqlCondition;
     if (block) {
@@ -398,7 +467,11 @@ static const NSString *kCKModelIndexDesc = @"desc";
 
 #pragma mark
 #pragma mark - replace
-
+/**
+ *  有则更新/无则插入语句 （多条数据）
+ *
+ *  @param array 数据数组
+ */
 + (void)replaceWithArray:(NSArray *)array{
     NSMutableArray *sqls = @[].mutableCopy;
     for (id item in array) {
@@ -407,12 +480,20 @@ static const NSString *kCKModelIndexDesc = @"desc";
     }
     [self executeUpdateWithMuchSql:sqls];
 }
+/**
+ *  有则更新/无则插入语句 （单条数据）
+ */
 - (void)replace{
     NSString *sql = [[self class] replaceSqlFromItem:self];
     [[self class] executeUpdateWithSql:sql];
 }
 #pragma mark
 #pragma mark - delete
+/**
+ *  删除多条数据（每个字段都唯一对应）
+ *
+ *  @param array 数据数组
+ */
 + (void)deleteWithArray:(NSArray *)array{
     NSMutableArray *sqls = @[].mutableCopy;
     for (id item in array) {
@@ -421,6 +502,11 @@ static const NSString *kCKModelIndexDesc = @"desc";
     }
     [self executeUpdateWithMuchSql:sqls];
 }
+/**
+ *  条件删除数据
+ *
+ *  @param block 条件语句
+ */
 + (void)deleteWithConditions:(id (^)(CKConditionMaker * maker))block{
     NSString *sqlCondition;
     if (block) {
@@ -432,6 +518,9 @@ static const NSString *kCKModelIndexDesc = @"desc";
     return [[self class]executeUpdateWithSql:sql];
 
 }
+/**
+ *  单条数据删除
+ */
 - (void)delete{
     NSString *sql = [[self class] deleteSqlFromItem:self];
     [[self class] executeUpdateWithSql:sql];

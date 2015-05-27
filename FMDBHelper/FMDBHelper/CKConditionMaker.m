@@ -30,6 +30,14 @@
     return self;
 }
 
+/**
+ *  sql关键字替换
+ *
+ *  @param item 关键字字句
+ *  @param cls  类型
+ *
+ *  @return 替换后的语句
+ */
 NSString *sqlKeywordsReplace(NSString *item, Class cls){
     NSString *value = item.copy;
     NSArray *propertyArray = [cls propertyArray];
@@ -43,6 +51,13 @@ NSString *sqlKeywordsReplace(NSString *item, Class cls){
     return value;
 }
 
+/**
+ *  排序枚举映射
+ *
+ *  @param type 类型
+ *
+ *  @return 正序/倒序
+ */
 NSString *conditionMakerMap(CKConditionMakerOrderByType type){
     if (type == CKOrderByAsc) {
         return @"asc";
@@ -57,36 +72,76 @@ NSString *conditionMakerMap(CKConditionMakerOrderByType type){
 @implementation CKConditionMaker
 
 - (CKConditionMaker * (^)(NSString *))where{
+    /**
+     *  where 条件
+     *
+     *  @param item 条件
+     *
+     *  @return CKConditionMaker
+     */
     return ^CKConditionMaker *(NSString *item) {
         self.sqlCondition = [self.sqlCondition stringByAppendingFormat:@" where %@",sqlKeywordsReplace(item, self.cls)];
         return self;
     };
 }
 - (CKConditionMaker * (^)(NSString *))and{
+    /**
+     *  where 的 and字句
+     *
+     *  @param item 条件
+     *
+     *  @return CKConditionMaker
+     */
     return ^CKConditionMaker *(NSString *item) {
         self.sqlCondition = [self.sqlCondition stringByAppendingFormat:@" and %@",sqlKeywordsReplace(item, self.cls)];
         return self;
     };
 }
 - (CKConditionMaker *(^)(NSString *))or{
+    /**
+     *  where 的or字句
+     *
+     *  @param item 条件
+     *
+     *  @return CKConditionMaker
+     */
     return ^CKConditionMaker *(NSString *item) {
         self.sqlCondition = [self.sqlCondition stringByAppendingFormat:@" or %@",sqlKeywordsReplace(item, self.cls)];
         return self;
     };
 }
 - (CKConditionMaker *(^)(NSString *))like{
+    /**
+     *  模糊查询
+     *
+     *  @param item 模糊方式
+     *
+     *  @return CKConditionMaker
+     */
     return ^CKConditionMaker *(NSString *item) {
         self.sqlCondition = [self.sqlCondition stringByAppendingFormat:@" like %@",sqlKeywordsReplace(item, self.cls)];
         return self;
     };
 }
 - (CKConditionMaker * (^)(NSString *orderKey, CKConditionMakerOrderByType orderType))orderBy{
+    /**
+     *  @param orderKey  排序字段
+     *  @param orderType 正序/倒序
+     *
+     *  @return CKConditionMaker
+     */
     return ^CKConditionMaker *(NSString *orderKey, CKConditionMakerOrderByType orderType) {
         self.sqlCondition = [self.sqlCondition stringByAppendingFormat:@" order by %@ %@",sqlKeywordsReplace(orderKey, self.cls),conditionMakerMap(orderType)];
         return self;
     };
 }
 - (CKConditionMaker * (^)(NSInteger location, NSInteger count))limit{
+    /**
+     *  @param location 位置
+     *  @param count    个数
+     *
+     *  @return CKConditionMaker
+     */
     return ^CKConditionMaker *(NSInteger location, NSInteger count) {
         self.sqlCondition = [self.sqlCondition stringByAppendingFormat:@" limit %ld,%ld",(long)location,(long)count];
         return self;
@@ -107,48 +162,111 @@ NSString *conditionMakerMap(CKConditionMakerOrderByType type){
 @implementation CKQueryMaker
 
 - (CKQueryMaker * (^)(NSString *))count{
+    /**
+     *  获取个数
+     *
+     *  @param alias 别名
+     *
+     *  @return CKQueryMaker
+     */
     return ^CKQueryMaker *(NSString *alias) {
         [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:@"count(0)"];
         return self;
     };
 }
 - (CKQueryMaker *(^)(NSString *,NSString *))max{
+    /**
+     *  最大值函数
+     *
+     *  @param column 字段名
+     *  @param alias  别名
+     *
+     *  @return CKQueryMaker
+     */
     return ^CKQueryMaker *(NSString *column,NSString *alias) {
         [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:[NSString stringWithFormat:@"max(%@)",sqlKeywordsReplace(column, self.cls)]];
         return self;
     };
 }
 - (CKQueryMaker *(^)(NSString *,NSString *))min{
+    /**
+     *  最小值函数
+     *
+     *  @param column 字段名
+     *  @param alias  别名
+     *
+     *  @return CKQueryMaker
+     */
     return ^CKQueryMaker *(NSString *column,NSString *alias) {
         [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:[NSString stringWithFormat:@"min(%@)",sqlKeywordsReplace(column, self.cls)]];
         return self;
     };
 }
 - (CKQueryMaker *(^)(NSString *,NSString *))avg{
+    /**
+     *  平均值函数
+     *
+     *  @param column 字段名
+     *  @param alias  别名
+     *
+     *  @return CKQueryMaker
+     */
     return ^CKQueryMaker *(NSString *column,NSString *alias) {
         [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:[NSString stringWithFormat:@"avg(%@)",sqlKeywordsReplace(column, self.cls)]];
         return self;
     };
 }
 - (CKQueryMaker *(^)(NSString *,NSString *))sum{
+    /**
+     *  求和函数
+     *
+     *  @param column 字段名
+     *  @param alias  别名
+     *
+     *  @return CKQueryMaker
+     */
     return ^CKQueryMaker *(NSString *column,NSString *alias) {
         [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:[NSString stringWithFormat:@"sum(%@)",sqlKeywordsReplace(column, self.cls)]];
         return self;
     };
 }
 - (CKQueryMaker *(^)(NSString *,NSString *))upper{
+    /**
+     *  转大写字母
+     *
+     *  @param column 字段名
+     *  @param alias  别名
+     *
+     *  @return CKQueryMaker
+     */
     return ^CKQueryMaker *(NSString *column,NSString *alias) {
         [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:[NSString stringWithFormat:@"upper(%@)",sqlKeywordsReplace(column, self.cls)]];
         return self;
     };
 }
 - (CKQueryMaker *(^)(NSString *,NSString *))lower{
+    /**
+     *  转小写字母
+     *
+     *  @param column 字段名
+     *  @param alias  别名
+     *
+     *  @return CKQueryMaker
+     */
     return ^CKQueryMaker *(NSString *column,NSString *alias) {
         [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:[NSString stringWithFormat:@"min(%@)",sqlKeywordsReplace(column, self.cls)]];
         return self;
     };
 }
 - (CKQueryMaker *(^)(NSString *,NSString *))length{
+    /**
+     *  长度
+     *
+     *  @param column 字段名
+     *  @param alias  别名
+     *
+     *  @return CKQueryMaker
+     */
     return ^CKQueryMaker *(NSString *column,NSString *alias) {
         [self.sqlQueryDict setObject:alias?:NSStringFromSelector(_cmd) forKey:[NSString stringWithFormat:@"length(%@)",sqlKeywordsReplace(column, self.cls)]];
         return self;
