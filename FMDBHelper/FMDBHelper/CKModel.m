@@ -29,6 +29,10 @@ static const NSString *kCKModelIndexDesc = @"desc";
 
 @implementation CKModel
 
+- (void)setNilValueForKey:(NSString *)key{
+    [self setValue:@"" forKey:key];
+}
+
 #pragma mark
 #pragma mark - Query Update
 /*

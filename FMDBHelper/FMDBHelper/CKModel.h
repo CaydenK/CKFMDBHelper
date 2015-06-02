@@ -20,11 +20,9 @@ static const NSString *kCKModelIndexAsc;
  */
 static const NSString *kCKModelIndexDesc;
 
-/**
- *  FMDBHelperBaseModel
- */
-@interface CKModel : MTLModel
+@protocol CKFmdbOperate <NSObject>
 
+@required
 #pragma mark
 #pragma mark - Table Operate
 
@@ -172,5 +170,11 @@ static const NSString *kCKModelIndexDesc;
  */
 - (void)delete;
 
+@end
+
+/**
+ *  FMDBHelperBaseModel
+ */
+@interface CKModel : MTLModel<CKFmdbOperate>
 
 @end
