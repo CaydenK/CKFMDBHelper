@@ -110,6 +110,23 @@ NSString *conditionMakerMap(CKConditionMakerOrderByType type){
         return self;
     };
 }
+/**
+ *  包含于运算
+ */
+- (CKConditionMaker * (^)(NSArray *))in{
+    /**
+     *  where 的in字句
+     *
+     *  @param items 内容列表
+     *
+     *  @return CKConditionMaker
+     */
+    return ^CKConditionMaker *(NSArray *items) {
+        self.sqlCondition = [self.sqlCondition stringByAppendingFormat:@" in (%@)",sqlKeywordsReplace([items componentsJoinedByString:@","], self.cls)];
+        return self;
+    };
+}
+
 - (CKConditionMaker *(^)(NSString *))like{
     /**
      *  模糊查询

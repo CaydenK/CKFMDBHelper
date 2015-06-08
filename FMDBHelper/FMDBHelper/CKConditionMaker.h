@@ -70,6 +70,10 @@ typedef NS_ENUM(NSUInteger, CKConditionMakerOrderByType){
  */
 - (CKConditionMaker * (^)(NSString *))or;
 /**
+ *  包含于运算
+ */
+- (CKConditionMaker * (^)(NSArray *))in;
+/**
  *  模糊查询
  */
 - (CKConditionMaker * (^)(NSString *))like;
