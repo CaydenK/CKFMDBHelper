@@ -14,11 +14,11 @@
 /**
  *  正序
  */
-static const NSString *kCKModelIndexAsc;
+extern NSString * const kCKModelIndexAsc;
 /**
  *  倒序
  */
-static const NSString *kCKModelIndexDesc;
+extern NSString * const kCKModelIndexDesc;
 
 @protocol CKFmdbOperate <NSObject>
 
@@ -109,6 +109,15 @@ static const NSString *kCKModelIndexDesc;
  *  @return 查询结果
  */
 + (NSArray *)query:(id (^)(CKQueryMaker* maker))aQuery withConditions:(id (^)(CKConditionMaker * maker))block;
+
+/**
+ *  查询任意自定义语句
+ *
+ *  @param sql 查询语句
+ *
+ *  @return 查询到的字典数组
+ */
++ (NSArray *)queryDictArrayWithSql:(NSString *)sql;
 #pragma mark
 #pragma mark - insert
 /**

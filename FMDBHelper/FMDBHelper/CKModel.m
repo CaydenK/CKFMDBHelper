@@ -17,11 +17,11 @@
 /**
  *  正序
  */
-static const NSString *kCKModelIndexAsc = @"asc";
+NSString * const kCKModelIndexAsc = @"asc";
 /**
  *  倒序
  */
-static const NSString *kCKModelIndexDesc = @"desc";
+NSString * const kCKModelIndexDesc = @"desc";
 
 @interface CKModel ()
 
@@ -408,6 +408,30 @@ static const NSString *kCKModelIndexDesc = @"desc";
     NSString *tableName = NSStringFromClass([self class]);
     NSString *sql = [NSString stringWithFormat:@"select %@ from '%@' %@",sqlQuery?:@"*",tableName,sqlCondition?:@""];
     return [self queryDict:sqlQueryDict withSQL:sql];
+}
+
+/**
+ *  查询任意自定义语句
+ *
+ *  @param sql 查询语句
+ *
+ *  @return 查询到的字典数组
+ */
++ (NSArray *)queryDictArrayWithSql:(NSString *)sql{
+    FMDatabase *db = [[CKManager shareManager] databaseWithName:CKDBNAME];
+    if (![db open]) {return nil;}
+    FMResultSet *rs=[db executeQuery:sql];
+    NSArray *keys=rs.columnNameToIndexMap.allKeys;
+    NSMutableArray *result = @[].mutableCopy;
+    while ([rs next]) {
+        NSMutableDictionary *resultDict=@{}.mutableCopy;
+        for ( NSString *key in keys) {
+            [resultDict setObject:[rs stringForColumn:key]?:@"" forKey:key];
+        }
+        [result addObject:resultDict];
+    }
+    [db close];
+    return result;
 }
 
 #pragma mark

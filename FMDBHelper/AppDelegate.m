@@ -20,12 +20,12 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-//    [CKTestModel createTable];
-//    [CKTestModel createIndex:@"testIndex" unique:YES columns:@"index",@"name",nil];
-//    [CKTestModel dropIndex:@"testIndex"];
-//    [CKTestModel createIndex:@"testIndex" unique:YES columnDict:@{@"index":kCKModelIndexAsc,@"name":kCKModelIndexDesc}];
+    [CKTestModel createTable];
+    [CKTestModel createIndex:@"testIndex" unique:YES columns:@"index",@"name",nil];
+    [CKTestModel dropIndex:@"testIndex"];
+    [CKTestModel createIndex:@"testIndex" unique:YES columnDict:@{@"index":kCKModelIndexAsc,@"name":kCKModelIndexDesc}];
 //    [CKTestModel createIndex:@"testIndex" unique:YES columns:@"index",@"lastName",nil];
-//    [CKTestModel updateColumn];
+    [CKTestModel updateColumn];
     
     NSArray *array = [CKTestModel queryWithConditions:^id(CKConditionMaker *maker) {
         return maker.where(@"index = 1").and(@"index = 1").orderBy(@"[index]",CKOrderByAsc).limit(0,1);
@@ -64,6 +64,11 @@
     [model1 delete];
     NSArray *array6 = [CKTestModel queryWithConditions:NULL];
     NSLog(@"%@",array6);
+    
+    NSArray *array7 = [CKTestModel queryDictArrayWithSql:@"select * from CKTestModel"];
+    NSLog(@"%@",array7);
+    
+    
     
     return YES;
 }
