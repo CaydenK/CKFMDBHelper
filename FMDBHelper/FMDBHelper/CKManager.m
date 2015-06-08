@@ -11,7 +11,7 @@
 #import <objc/runtime.h>
 
 #import "NSObject+CKProperty.h"
-
+#import "CKFMDBHelper.h"
 
 #define PATH_OF_APP_HOME    NSHomeDirectory()
 #define PATH_OF_TEMP        NSTemporaryDirectory()
@@ -27,6 +27,10 @@ static NSString const *sqliteGroup = @"Archive";
 @end
 
 @implementation CKManager
+
+- (NSString *)dbPath{
+    return sqlitePathWithName(CKDBNAME);
+}
 
 /**
  *  获取当前单例

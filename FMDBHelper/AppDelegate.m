@@ -9,7 +9,7 @@
 #import "AppDelegate.h"
 #import "CKFMDBHelper.h"
 #import "CKTestModel.h"
-
+#import "CKManager.h"
 
 @class AAModel;
 @interface AppDelegate ()
@@ -20,13 +20,15 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    [CKTestModel createTable];
-    [CKTestModel createIndex:@"testIndex" unique:YES columns:@"index",@"name",nil];
-    [CKTestModel dropIndex:@"testIndex"];
-    [CKTestModel createIndex:@"testIndex" unique:YES columnDict:@{@"index":kCKModelIndexAsc,@"name":kCKModelIndexDesc}];
-//    [CKTestModel createIndex:@"testIndex" unique:YES columns:@"index",@"lastName",nil];
-    [CKTestModel updateColumn];
-    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[CKManager shareManager].dbPath] == NO) {
+        [CKTestModel createTable];
+        [CKTestModel createIndex:@"testIndex" unique:YES columns:@"index",@"name",nil];
+        [CKTestModel dropIndex:@"testIndex"];
+        [CKTestModel createIndex:@"testIndex" unique:YES columnDict:@{@"index":kCKModelIndexAsc,@"name":kCKModelIndexDesc}];
+//        [CKTestModel createIndex:@"testIndex" unique:YES columns:@"index",@"lastName",nil];
+        [CKTestModel updateColumn];
+    }
+
     NSArray *array = [CKTestModel queryWithConditions:^id(CKConditionMaker *maker) {
         return maker.where(@"index = 1").and(@"index = 1").orderBy(@"[index]",CKOrderByAsc).limit(0,1);
     }];

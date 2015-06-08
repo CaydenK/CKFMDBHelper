@@ -15,6 +15,8 @@
  */
 @interface CKManager : NSObject
 
+@property (nonatomic, copy) NSString *dbPath;
+
 /**
  *  获取当前单例
  *
