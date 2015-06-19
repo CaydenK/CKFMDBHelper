@@ -12,6 +12,7 @@
 #import "NSObject+CKProperty.h"
 #import "CKManager.h"
 #import "NSString+CKDB.h"
+#import "NSDictionary+CKExternal.h"
 
 
 /**
@@ -29,10 +30,8 @@ NSString * const kCKModelIndexDesc = @"desc";
 
 @implementation CKModel
 
-- (void)setNilValueForKey:(NSString *)key{
-    [self setValue:@"" forKey:key];
-}
-
+#pragma mark
+#pragma mark - CKFmdbOperate
 #pragma mark
 #pragma mark - Query Update
 /*
@@ -336,9 +335,9 @@ NSString * const kCKModelIndexDesc = @"desc";
  *  @return 是否成功
  */
 + (void)updateColumn{
-//    一下两种方式可以获取当前表结构，当前只需知道字段列表，所以采用第二种
-//    select * from sqlite_master
-//    PRAGMA  table_info(tableName)
+    //    一下两种方式可以获取当前表结构，当前只需知道字段列表，所以采用第二种
+    //    select * from sqlite_master
+    //    PRAGMA  table_info(tableName)
     NSString *tableName = NSStringFromClass([self class]);
     NSMutableString *query = [NSMutableString stringWithFormat:@"PRAGMA  table_info(%@)",tableName];
     FMDatabase *db = [[CKManager shareManager] databaseWithName:CKDBNAME];
@@ -476,7 +475,7 @@ NSString * const kCKModelIndexDesc = @"desc";
         [sqls addObject:sql];
     }
     [self executeUpdateWithMuchSql:sqls];
-
+    
 }
 /**
  *  单条数据更新
@@ -544,7 +543,7 @@ NSString * const kCKModelIndexDesc = @"desc";
     NSString *tableName = NSStringFromClass([self class]);
     NSString *sql = [[NSString stringWithFormat:@"delete from %@",tableName] stringByAppendingString:sqlCondition?:@""];
     return [[self class]executeUpdateWithSql:sql];
-
+    
 }
 /**
  *  单条数据删除
@@ -554,7 +553,150 @@ NSString * const kCKModelIndexDesc = @"desc";
     [[self class] executeUpdateWithSql:sql];
 }
 
+#pragma mark
+#pragma mark - CKFmdbJsonOperate
+/**
+ *  字典转换model
+ *
+ *  @param dict model字典
+ *
+ *  @return model
+ */
++ (id<CKFmdbJsonOperate>)modelWithDictionary:(NSDictionary *)dict{
+    id<CKFmdbJsonOperate> item = [[self alloc]init];
+    [item setValuesFromDictionary:dict];
+    return item;
+}
+/**
+ *  字典转换为数组模型
+ *
+ *  @param dicts 字典数组
+ *
+ *  @return 模型数组
+ */
++ (NSArray *)modelsWithDictionarys:(NSArray *)dicts{
+    NSMutableArray *array = @[].mutableCopy;
+    for (NSDictionary *dict in dicts) {
+        id item = [self modelWithDictionary:dict];
+        [array addObject:item];
+    }
+    return array.copy;
+}
+/**
+ *  模型数组转换为字典数组
+ *
+ *  @param models 模型数组
+ *
+ *  @return 字典数组
+ */
++ (NSArray *)modelDictnarysWithModels:(NSArray *)models{
+    NSMutableArray *array = @[].mutableCopy;
+    for (id item in models) {
+        [array addObject:[item modelDictionary]];
+    }
+    return array.copy;
+}
+/**
+ *  模型数组转换为json
+ *
+ *  @param models 模型数组
+ *
+ *  @return json
+ */
++ (NSString *)modelsJsonWithModels:(NSArray *)models{
+    NSArray *array = [self modelDictnarysWithModels:models];
+    NSString *jsonString = nil;
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:array
+                                                       options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
+                                                         error:&error];
+    if (! jsonData) {
+        NSLog(@"Got an error: %@", error);
+    } else {
+        jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    }
+    return jsonString;
+}
+/**
+ *  根据字典赋值
+ *
+ *  @param dicts 模型字典
+ */
+- (void)setValuesFromDictionary:(NSDictionary *)dicts{
+    NSSet *propertySet = [self propertySet];
+    for (NSString *property in propertySet) {
+        [self setValue:[dicts ckObjectForKey:property] forKey:property];
+    }
+}
+/**
+ *  获取模型字典
+ *
+ *  @return 模型字典
+ */
+- (NSDictionary *)modelDictionary{
+    NSSet *propertySet = [self propertySet];
+    NSMutableDictionary *dict = @{}.mutableCopy;
+    for (NSString *property in propertySet) {
+        [dict setObject:[self valueForKey:property]?:@"" forKey:property];
+    }
+    return dict;
+}
+/**
+ *  获取模型json
+ *
+ *  @return 模型json
+ */
+- (NSString *)modelJson{
+    NSString *jsonString = nil;
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:[self modelDictionary]
+                                                       options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
+                                                         error:&error];
+    if (! jsonData) {
+        NSLog(@"Got an error: %@", error);
+    } else {
+        jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    }
+    return jsonString;
+}
 
+#pragma mark
+#pragma mark - NSCopying
+- (id)copyWithZone:(NSZone *)zone{
+    return [[[self class] allocWithZone:zone] initWithDictionary:self.modelDictionary];
+}
+
+
+#pragma mark
+#pragma mark - Method
+
+- (instancetype)initWithDictionary:(NSDictionary *)dict{
+    self = [super init];
+    if (self) {
+        [self setValuesFromDictionary:dict];
+    }
+    return self;
+}
+
++ (BOOL)equalModel:(CKModel *)aModel anotherModel:(CKModel *)bModel{
+    return [aModel isEqual:bModel];
+}
+- (BOOL)isEqual:(CKModel *)model{
+    if (self == model) return YES;
+    if (![model isMemberOfClass:self.class]) return NO;
+    
+    for (NSString *key in self.class.propertySet) {
+        id selfValue = [self valueForKey:key];
+        id modelValue = [model valueForKey:key];
+        
+        BOOL valuesEqual = ((selfValue == nil && modelValue == nil) || [selfValue isEqual:modelValue]);
+        if (!valuesEqual) return NO;
+    }
+    return YES;
+}
+BOOL EqualModels(CKModel *aModel, CKModel *bModel){
+    return [aModel isEqual:bModel];
+}
 
 
 @end

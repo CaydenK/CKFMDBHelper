@@ -29,4 +29,14 @@
     return array;
 }
 
+/**
+ *  获取属性集合
+ *
+ *  @return 属性集合
+ */
+- (NSSet *)propertySet{
+    return [NSSet setWithArray:[self propertyArray]];
+}
+
+
 @end

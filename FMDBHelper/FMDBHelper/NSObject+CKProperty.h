@@ -17,4 +17,11 @@
  */
 - (NSArray *)propertyArray;
 
+/**
+ *  获取属性集合
+ *
+ *  @return 属性集合
+ */
+- (NSSet *)propertySet;
+
 @end

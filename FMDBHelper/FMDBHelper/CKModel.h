@@ -6,7 +6,9 @@
 //  Copyright (c) 2015年 tcyx. All rights reserved.
 //
 
-#import <Mantle.h>
+// FIXME: 由于.net后台方法可根据参数重载，所以不存在后台增加字段导致crash的问题，所以默认跟服务器key对应就不会导致crash
+
+#import <Foundation/Foundation.h>
 
 @class CKConditionMaker;
 @class CKQueryMaker;
@@ -181,9 +183,72 @@ extern NSString * const kCKModelIndexDesc;
 
 @end
 
+@protocol CKFmdbJsonOperate <NSObject>
+
+/**
+ *  字典转换model
+ *
+ *  @param dict model字典
+ *
+ *  @return model
+ */
++ (id<CKFmdbJsonOperate>)modelWithDictionary:(NSDictionary *)dict;
+/**
+ *  字典转换为数组模型
+ *
+ *  @param dicts 字典数组
+ *
+ *  @return 模型数组
+ */
++ (NSArray *)modelsWithDictionarys:(NSArray *)dicts;
+/**
+ *  模型数组转换为字典数组
+ *
+ *  @param models 模型数组
+ *
+ *  @return 字典数组
+ */
++ (NSArray *)modelDictnarysWithModels:(NSArray *)models;
+/**
+ *  模型数组转换为json
+ *
+ *  @param models 模型数组
+ *
+ *  @return json
+ */
++ (NSString *)modelsJsonWithModels:(NSArray *)models;
+/**
+ *  根据字典赋值
+ *
+ *  @param dicts 模型字典
+ */
+- (void)setValuesFromDictionary:(NSDictionary *)dicts;
+/**
+ *  获取模型字典
+ *
+ *  @return 模型字典
+ */
+- (NSDictionary *)modelDictionary;
+/**
+ *  获取模型json
+ *
+ *  @return 模型json
+ */
+- (NSString *)modelJson;
+
+
+@end
 /**
  *  FMDBHelperBaseModel
  */
-@interface CKModel : MTLModel<CKFmdbOperate>
+@interface CKModel : NSObject<CKFmdbOperate,CKFmdbJsonOperate,NSCopying>
+
+//根据字典初始化
+- (instancetype)initWithDictionary:(NSDictionary *)dict;
+//Model 是否相等
++ (BOOL)equalModel:(CKModel *)aModel anotherModel:(CKModel *)bModel;
+- (BOOL)isEqual:(CKModel *)model;
+BOOL EqualModels(CKModel *aModel, CKModel *bModel);
+
 
 @end
