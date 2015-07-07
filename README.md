@@ -7,6 +7,20 @@
 并且继承Mantle，所有Mantle的操作都能直接使用，比如json的支持~
 
 ##如何使用
+
+###Model创建
+```
+#import "CKModel.h"
+
+@interface CKTestModel : CKModel
+
+@property (nonatomic, copy) NSNumber<CKPrimaryKey> *index;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, copy) NSString *lastName;
+
+@end
+```
+
 ###表操作
 ```
 	//创建表
@@ -39,9 +53,10 @@
 ##### 插入语句
 ```
     CKTestModel *model1 = [CKTestModel new];
-    model1.index = 1;
+    model1.index = (id)@1;
     model1.name = @"222";
     model1.lastName = @"333";
+    [model1 insert];
     [CKTestModel insertWithArray:@[model1]];
     NSArray *array2 = [CKTestModel queryWithConditions:NULL];
     NSLog(@"%@",array2);

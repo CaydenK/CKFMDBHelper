@@ -35,7 +35,7 @@
     NSLog(@"%@",array);
     
     CKTestModel *model1 = [CKTestModel new];
-    model1.index = 1;
+    model1.index = (id)@1;
     model1.name = @"222";
     model1.lastName = @"333";
     [model1 insert];

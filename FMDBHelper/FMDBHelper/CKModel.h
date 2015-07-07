@@ -6,12 +6,13 @@
 //  Copyright (c) 2015年 tcyx. All rights reserved.
 //
 
-// FIXME: 由于.net后台方法可根据参数重载，所以不存在后台增加字段导致crash的问题，所以默认跟服务器key对应就不会导致crash
-
 #import <Foundation/Foundation.h>
 
 @class CKConditionMaker;
 @class CKQueryMaker;
+
+@protocol CKPrimaryKey <NSObject>
+@end
 
 /**
  *  正序
@@ -249,6 +250,5 @@ extern NSString * const kCKModelIndexDesc;
 + (BOOL)equalModel:(CKModel *)aModel anotherModel:(CKModel *)bModel;
 - (BOOL)isEqual:(CKModel *)model;
 BOOL EqualModels(CKModel *aModel, CKModel *bModel);
-
 
 @end

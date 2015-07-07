@@ -224,10 +224,12 @@ NSString * const kCKModelIndexDesc = @"desc";
  */
 + (void)createTable{
     NSString *tableName = NSStringFromClass([self class]);
-    NSArray *propertyArray = [[self class] propertyArray];
+    NSDictionary *propertyDict = [[self class] propertyDict];
+    NSArray *propertyArray = [propertyDict allKeys];
     NSMutableString *sql = [NSMutableString stringWithFormat:@"create table if not exists '%@' ( ",tableName];
     for (NSString *property in propertyArray) {
-        [sql appendFormat:@"'%@' text default '' not null,",property];
+        NSArray *attributes = [propertyDict objectForKey:property];
+        [sql appendFormat:@"'%@' text %@ default '' not null,",property,[self isPrimaryKey:attributes]?@"primary key":@""];
     }
     if (propertyArray.count > 0) {
         [sql deleteCharactersInRange:NSMakeRange(sql.length-1, 1)];
@@ -235,6 +237,15 @@ NSString * const kCKModelIndexDesc = @"desc";
     [sql appendFormat:@");"];
     [self executeUpdateWithSql:sql];
 }
++ (BOOL)isPrimaryKey:(NSArray *)attributes{
+    for (NSString *str in attributes) {
+        if ([str rangeOfString:@"<CKPrimaryKey>"].length>0) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 /**
  *  创建索引
  *

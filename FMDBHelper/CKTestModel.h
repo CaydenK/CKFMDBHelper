@@ -10,7 +10,7 @@
 
 @interface CKTestModel : CKModel
 
-@property (nonatomic, assign) NSInteger index;
+@property (nonatomic, copy) NSNumber<CKPrimaryKey> *index;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *lastName;
 
