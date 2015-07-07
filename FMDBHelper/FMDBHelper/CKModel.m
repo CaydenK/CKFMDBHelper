@@ -229,7 +229,7 @@ NSString * const kCKModelIndexDesc = @"desc";
     NSMutableString *sql = [NSMutableString stringWithFormat:@"create table if not exists '%@' ( ",tableName];
     for (NSString *property in propertyArray) {
         NSArray *attributes = [propertyDict objectForKey:property];
-        [sql appendFormat:@"'%@' text %@ default '' not null,",property,[self isPrimaryKey:attributes]?@"primary key":@""];
+        [sql appendFormat:@"'%@' %@ default '' not null,",property,[self isPrimaryKey:attributes]?@"integer primary key":@"text"];
     }
     if (propertyArray.count > 0) {
         [sql deleteCharactersInRange:NSMakeRange(sql.length-1, 1)];
