@@ -11,7 +11,7 @@
 
 @interface CKBaseMaker ()
 
-@property (nonatomic, copy) Class cls;
+@property (nonatomic, unsafe_unretained) Class cls;
 
 @end
 
@@ -65,6 +65,11 @@ NSString *conditionMakerMap(CKConditionMakerOrderByType type){
     else{
         return @"desc";
     }
+}
+
+- (void)dealloc
+{
+    _cls = nil;
 }
 
 @end
