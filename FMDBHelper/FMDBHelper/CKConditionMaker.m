@@ -44,7 +44,7 @@ NSString *sqlKeywordsReplace(NSString *item, Class cls){
     for (NSString *property in propertyArray) {
         NSRange range = [value rangeOfString:property];
         NSRange range2 = [value rangeOfString:[NSString stringWithFormat:@"[%@]",property]];
-        if (range.length > 0 && range2.length == 0) {
+        if (range.location != NSNotFound && range2.location == NSNotFound) {
             value = [value stringByReplacingCharactersInRange:range withString:[NSString stringWithFormat:@"[%@]",property]];
         }
     }

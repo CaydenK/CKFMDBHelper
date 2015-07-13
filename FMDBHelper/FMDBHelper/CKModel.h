@@ -246,9 +246,5 @@ extern NSString * const kCKModelIndexDesc;
 
 //根据字典初始化
 - (instancetype)initWithDictionary:(NSDictionary *)dict;
-//Model 是否相等
-+ (BOOL)equalModel:(CKModel *)aModel anotherModel:(CKModel *)bModel;
-- (BOOL)isEqual:(CKModel *)model;
-BOOL EqualModels(CKModel *aModel, CKModel *bModel);
 
 @end

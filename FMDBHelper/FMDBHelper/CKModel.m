@@ -689,24 +689,31 @@ NSString * const kCKModelIndexDesc = @"desc";
     return self;
 }
 
-+ (BOOL)equalModel:(CKModel *)aModel anotherModel:(CKModel *)bModel{
-    return [aModel isEqual:bModel];
-}
-- (BOOL)isEqual:(CKModel *)model{
-    if (self == model) return YES;
-    if (![model isMemberOfClass:self.class]) return NO;
+- (BOOL)isEqual:(id)object{
+    if (self == object) return YES;
+    if (![object isMemberOfClass:self.class]) return NO;
     
     for (NSString *key in self.class.propertySet) {
         id selfValue = [self valueForKey:key];
-        id modelValue = [model valueForKey:key];
-        
+        id modelValue = [object valueForKey:key];
         BOOL valuesEqual = ((selfValue == nil && modelValue == nil) || [selfValue isEqual:modelValue]);
         if (!valuesEqual) return NO;
     }
     return YES;
 }
-BOOL EqualModels(CKModel *aModel, CKModel *bModel){
-    return [aModel isEqual:bModel];
+
+- (NSString *)description{
+    return [self modelJson];
+}
+- (NSString *)debugDescription{
+    return [NSString stringWithFormat:@"<%@:%p,%@>",[self class],self,[self modelJson]];
+}
+- (NSUInteger)hash {
+    NSUInteger value = 0;
+    for (NSString *key in self.class.propertySet) {
+        value ^= [[self valueForKey:key] hash];
+    }
+    return value;
 }
 
 

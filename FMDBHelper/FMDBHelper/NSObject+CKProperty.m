@@ -16,6 +16,33 @@
  *
  *  @return 属性列表
  */
++ (NSArray *)propertyArray{
+    return [[self new] propertyArray];
+}
+
+/**
+ *  获取属性集合
+ *
+ *  @return 属性集合
+ */
++ (NSSet *)propertySet{
+    return [[self new] propertySet];
+}
+
+/**
+ *  属性字典，key为属性名称，value是数组，属性的编译属性列表
+ *
+ *  @return 属性字典
+ */
++ (NSDictionary *)propertyDict{
+    return [[self new] propertyDict];
+}
+
+/**
+ *  获取属性列表
+ *
+ *  @return 属性列表
+ */
 - (NSArray *)propertyArray{
     NSMutableArray *array=[NSMutableArray array];
     id itemClass = objc_getClass(object_getClassName([self class]));
@@ -56,6 +83,8 @@
     }
     return dict;
 }
+
+
 
 
 @end
