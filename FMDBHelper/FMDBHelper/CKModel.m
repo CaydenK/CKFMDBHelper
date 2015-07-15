@@ -729,20 +729,20 @@ NSString * const kCKModelIndexDesc = @"desc";
     }
     return YES;
 }
-//
-//- (NSString *)description{
-//    return [self modelJson];
-//}
-//- (NSString *)debugDescription{
-//    return [NSString stringWithFormat:@"<%@:%p,%@>",[self class],self,[self modelJson]];
-//}
-//- (NSUInteger)hash {
-//    NSUInteger value = 0;
-//    for (NSString *key in self.class.propertyArray) {
-//        value ^= [[self valueForKey:key] hash];
-//    }
-//    return value;
-//}
+
+- (NSString *)description{
+    return [self modelJson];
+}
+- (NSString *)debugDescription{
+    return [NSString stringWithFormat:@"<%@:%p,%@>",[self class],self,[self modelJson]];
+}
+- (NSUInteger)hash {
+    NSUInteger value = 0;
+    for (NSString *key in self.class.propertyArray) {
+        value ^= [[self valueForKey:key] hash];
+    }
+    return value;
+}
 
 
 @end
