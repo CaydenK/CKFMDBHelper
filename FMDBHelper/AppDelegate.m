@@ -10,6 +10,7 @@
 #import "CKFMDBHelper.h"
 #import "CKTestModel.h"
 #import "CKManager.h"
+#import "CKTestSubModel.h"
 
 @class AAModel;
 @interface AppDelegate ()
@@ -41,6 +42,7 @@
     [model1 insert];
     
     [model1 setValuesFromDictionary:@{@"ind":@1234,@"ac":@"nameValue",@"bbb":@"lastNameValue",@"ccc":@"indexValue"}];
+    NSLog(@"%@",[CKTestSubModel propertyDict]);
     
     [CKTestModel insertWithArray:@[model1]];
     NSArray *array2 = [CKTestModel queryWithConditions:NULL];

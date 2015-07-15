@@ -12,8 +12,8 @@
 @interface CKTestModel : CKModel<CKFmdbJsonSerializing>
 
 @property (nonatomic, copy) NSNumber<CKPrimaryKey> *index;
-@property (nonatomic, copy) NSString     *name;
-@property (nonatomic, copy) NSString     *lastName;
-@property (nonatomic, copy) CKTest     *test;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, copy) NSString *lastName;
+@property (nonatomic, copy) CKTest   *test;
 
 @end

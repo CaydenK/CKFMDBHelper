@@ -29,6 +29,10 @@
         }
         [array addObject:propertyName];
     }
+    Class cls = class_getSuperclass(self);
+    if (!(cls == NSClassFromString(@"CKModel") || cls == [NSObject class])) {
+        [array addObjectsFromArray:[cls propertyArray]];
+    }
     return array;
 }
 
@@ -60,6 +64,11 @@
         }
         [dict setObject:[propertyAttributes componentsSeparatedByString:@","] forKey:propertyName];
     }
+    Class cls = class_getSuperclass(self);
+    if (!(cls == NSClassFromString(@"CKModel") || cls == [NSObject class])) {
+        [dict addEntriesFromDictionary:[cls propertyDict]];
+    }
+
     return dict;
 
 }
