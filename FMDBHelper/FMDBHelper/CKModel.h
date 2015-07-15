@@ -239,6 +239,18 @@ extern NSString * const kCKModelIndexDesc;
 
 
 @end
+
+@protocol CKFmdbJsonSerializing <NSObject>
+@required
+/**
+ *  json 解析Key mapping
+ *
+ *  @return mapping
+ */
++ (NSDictionary *)jsonKeyPathMapping;
+
+@end
+
 /**
  *  FMDBHelperBaseModel
  */

@@ -17,7 +17,19 @@
  *  @return 属性列表
  */
 + (NSArray *)propertyArray{
-    return [[self new] propertyArray];
+    NSMutableArray *array=[NSMutableArray array];
+    Class itemClass = objc_getClass(object_getClassName(self));
+    unsigned int outCount, i;
+    objc_property_t *properties = class_copyPropertyList(itemClass, &outCount);
+    for (i = 0; i < outCount; i++) {
+        objc_property_t property = properties[i];
+        NSString *propertyName = [NSString stringWithUTF8String:property_getName(property)];
+        if ([@[@"hash",@"superclass",@"description",@"debugDescription"] containsObject:propertyName]) {
+            continue;
+        }
+        [array addObject:propertyName];
+    }
+    return array;
 }
 
 /**
@@ -26,7 +38,7 @@
  *  @return 属性集合
  */
 + (NSSet *)propertySet{
-    return [[self new] propertySet];
+    return [NSSet setWithArray:[self propertyArray]];
 }
 
 /**
@@ -35,7 +47,21 @@
  *  @return 属性字典
  */
 + (NSDictionary *)propertyDict{
-    return [[self new] propertyDict];
+    NSMutableDictionary *dict=@{}.mutableCopy;
+    Class itemClass = objc_getClass(object_getClassName(self));
+    unsigned int outCount, i;
+    objc_property_t *properties = class_copyPropertyList(itemClass, &outCount);
+    for (i = 0; i < outCount; i++) {
+        objc_property_t property = properties[i];
+        NSString *propertyName = [NSString stringWithUTF8String:property_getName(property)];
+        NSString *propertyAttributes = [NSString stringWithUTF8String:property_getAttributes(property)];
+        if ([@[@"hash",@"superclass",@"description",@"debugDescription"] containsObject:propertyName]) {
+            continue;
+        }
+        [dict setObject:[propertyAttributes componentsSeparatedByString:@","] forKey:propertyName];
+    }
+    return dict;
+
 }
 
 /**
@@ -44,16 +70,7 @@
  *  @return 属性列表
  */
 - (NSArray *)propertyArray{
-    NSMutableArray *array=[NSMutableArray array];
-    id itemClass = objc_getClass(object_getClassName([self class]));
-    unsigned int outCount, i;
-    objc_property_t *properties = class_copyPropertyList(itemClass, &outCount);
-    for (i = 0; i < outCount; i++) {
-        objc_property_t property = properties[i];
-        NSString *propertyName = [NSString stringWithUTF8String:property_getName(property)];
-        [array addObject:propertyName];
-    }
-    return array;
+    return [[self class] propertyArray];
 }
 
 /**
@@ -71,17 +88,7 @@
  *  @return 属性字典
  */
 - (NSDictionary *)propertyDict{
-    NSMutableDictionary *dict=@{}.mutableCopy;
-    id itemClass = objc_getClass(object_getClassName([self class]));
-    unsigned int outCount, i;
-    objc_property_t *properties = class_copyPropertyList(itemClass, &outCount);
-    for (i = 0; i < outCount; i++) {
-        objc_property_t property = properties[i];
-        NSString *propertyName = [NSString stringWithUTF8String:property_getName(property)];
-        NSString *propertyAttributes = [NSString stringWithUTF8String:property_getAttributes(property)];
-        [dict setObject:[propertyAttributes componentsSeparatedByString:@","] forKey:propertyName];
-    }
-    return dict;
+    return [[self class] propertyDict];
 }
 
 

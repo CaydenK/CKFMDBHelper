@@ -10,4 +10,22 @@
 
 @implementation CKTestModel
 
++ (NSDictionary *)jsonKeyPathMapping{
+    return @{
+             @"index":@"ind",
+             @"name":@"ac",
+             @"lastName":@"bbb",
+             @"test.index":@"ccc",
+             };
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _test = [CKTest new];
+    }
+    return self;
+}
+
 @end

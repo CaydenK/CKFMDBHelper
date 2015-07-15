@@ -634,9 +634,37 @@ NSString * const kCKModelIndexDesc = @"desc";
  *  @param dicts 模型字典
  */
 - (void)setValuesFromDictionary:(NSDictionary *)dicts{
-    NSSet *propertySet = [self propertySet];
-    for (NSString *property in propertySet) {
-        [self setValue:[dicts ckObjectForKey:property] forKey:property];
+    if ([self conformsToProtocol:@protocol(CKFmdbJsonSerializing)]&&[self.class respondsToSelector:@selector(jsonKeyPathMapping)]) {
+        NSDictionary *jsonKeyPathMapping = [self.class jsonKeyPathMapping];
+        NSSet *propertyKeys = [self propertySet];
+        for (NSString *mappedPropertyKey in jsonKeyPathMapping.allKeys) {
+            id value = jsonKeyPathMapping[mappedPropertyKey];
+
+            if ([mappedPropertyKey rangeOfString:@"."].location != NSNotFound) {
+                NSArray *array = [mappedPropertyKey componentsSeparatedByString:@"."];
+                if (![propertyKeys containsObject:array.firstObject]) {
+                    NSAssert(NO, @"%@ is not a property of %@.", array.firstObject, self.class);
+                }
+            }else if (![propertyKeys containsObject:mappedPropertyKey]) {
+                NSAssert(NO, @"%@ is not a property of %@.", mappedPropertyKey, self.class);
+            }
+            
+            if ([value isKindOfClass:NSArray.class]) {
+                for (NSString *keyPath in value) {
+                    if ([keyPath isKindOfClass:NSString.class]) continue;
+                    NSAssert(NO, @"%@ must either map to a JSON key path or a JSON array of key paths, got: %@.", mappedPropertyKey, value);
+                }
+            } else if (![value isKindOfClass:NSString.class]) {
+                NSAssert(NO, @"%@ must either map to a JSON key path or a JSON array of key paths, got: %@.",mappedPropertyKey, value);
+            }
+            [self setValue:dicts[value] forKeyPath:mappedPropertyKey];
+        }
+    }
+    else{
+        NSSet *propertySet = [self propertySet];
+        for (NSString *property in propertySet) {
+            [self setValue:[dicts ckObjectForKey:property] forKey:property];
+        }
     }
 }
 /**
@@ -693,7 +721,7 @@ NSString * const kCKModelIndexDesc = @"desc";
     if (self == object) return YES;
     if (![object isMemberOfClass:self.class]) return NO;
     
-    for (NSString *key in self.class.propertySet) {
+    for (NSString *key in self.class.propertyArray) {
         id selfValue = [self valueForKey:key];
         id modelValue = [object valueForKey:key];
         BOOL valuesEqual = ((selfValue == nil && modelValue == nil) || [selfValue isEqual:modelValue]);
@@ -701,20 +729,20 @@ NSString * const kCKModelIndexDesc = @"desc";
     }
     return YES;
 }
-
-- (NSString *)description{
-    return [self modelJson];
-}
-- (NSString *)debugDescription{
-    return [NSString stringWithFormat:@"<%@:%p,%@>",[self class],self,[self modelJson]];
-}
-- (NSUInteger)hash {
-    NSUInteger value = 0;
-    for (NSString *key in self.class.propertySet) {
-        value ^= [[self valueForKey:key] hash];
-    }
-    return value;
-}
+//
+//- (NSString *)description{
+//    return [self modelJson];
+//}
+//- (NSString *)debugDescription{
+//    return [NSString stringWithFormat:@"<%@:%p,%@>",[self class],self,[self modelJson]];
+//}
+//- (NSUInteger)hash {
+//    NSUInteger value = 0;
+//    for (NSString *key in self.class.propertyArray) {
+//        value ^= [[self valueForKey:key] hash];
+//    }
+//    return value;
+//}
 
 
 @end

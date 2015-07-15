@@ -10,6 +10,7 @@
 		5095938C1B9E460A7BE2F47D /* libPods-FMDBHelper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5909B46354EAC37B3BC4F01A /* libPods-FMDBHelper.a */; };
 		B8052F391B0F067E00D54F37 /* CKConditionMaker.m in Sources */ = {isa = PBXBuildFile; fileRef = B8052F381B0F067E00D54F37 /* CKConditionMaker.m */; };
 		B821CEF11B0ED2820077129C /* NSString+CKDB.m in Sources */ = {isa = PBXBuildFile; fileRef = B821CEF01B0ED2820077129C /* NSString+CKDB.m */; };
+		B82A90FD1B55F9460060D939 /* CKTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B82A90FC1B55F9460060D939 /* CKTest.m */; };
 		B89F07C01B0EECB30024B59A /* CKTestModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B89F07BF1B0EECB30024B59A /* CKTestModel.m */; };
 		B8C3AE6F1B33F96000D7F719 /* NSDictionary+CKExternal.m in Sources */ = {isa = PBXBuildFile; fileRef = B8C3AE6E1B33F96000D7F719 /* NSDictionary+CKExternal.m */; };
 		B8D2C7091B0B2E65006A032F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B8D2C7081B0B2E65006A032F /* main.m */; };
@@ -42,6 +43,8 @@
 		B8052F381B0F067E00D54F37 /* CKConditionMaker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKConditionMaker.m; sourceTree = "<group>"; };
 		B821CEEF1B0ED2820077129C /* NSString+CKDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+CKDB.h"; sourceTree = "<group>"; };
 		B821CEF01B0ED2820077129C /* NSString+CKDB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+CKDB.m"; sourceTree = "<group>"; };
+		B82A90FB1B55F9460060D939 /* CKTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKTest.h; sourceTree = "<group>"; };
+		B82A90FC1B55F9460060D939 /* CKTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKTest.m; sourceTree = "<group>"; };
 		B89F07BE1B0EECB30024B59A /* CKTestModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKTestModel.h; sourceTree = "<group>"; };
 		B89F07BF1B0EECB30024B59A /* CKTestModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKTestModel.m; sourceTree = "<group>"; };
 		B8C3AE6D1B33F96000D7F719 /* NSDictionary+CKExternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+CKExternal.h"; sourceTree = "<group>"; };
@@ -132,6 +135,8 @@
 				B8D2C70B1B0B2E65006A032F /* AppDelegate.m */,
 				B89F07BE1B0EECB30024B59A /* CKTestModel.h */,
 				B89F07BF1B0EECB30024B59A /* CKTestModel.m */,
+				B82A90FB1B55F9460060D939 /* CKTest.h */,
+				B82A90FC1B55F9460060D939 /* CKTest.m */,
 				B8D2C7131B0B2E65006A032F /* Images.xcassets */,
 				B8D2C7151B0B2E65006A032F /* LaunchScreen.xib */,
 				B8D2C7821B0B60C8006A032F /* Storyboard.storyboard */,
@@ -332,6 +337,7 @@
 				B8D2C7811B0B4EED006A032F /* CKManager.m in Sources */,
 				B8D2C7471B0B35FE006A032F /* CKModel.m in Sources */,
 				B8D2C7441B0B325F006A032F /* NSObject+CKProperty.m in Sources */,
+				B82A90FD1B55F9460060D939 /* CKTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

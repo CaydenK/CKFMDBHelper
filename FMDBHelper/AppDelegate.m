@@ -39,6 +39,9 @@
     model1.name = @"222";
     model1.lastName = @"333";
     [model1 insert];
+    
+    [model1 setValuesFromDictionary:@{@"ind":@1234,@"ac":@"nameValue",@"bbb":@"lastNameValue",@"ccc":@"indexValue"}];
+    
     [CKTestModel insertWithArray:@[model1]];
     NSArray *array2 = [CKTestModel queryWithConditions:NULL];
     NSLog(@"%@",array2);
