@@ -74,3 +74,48 @@
 
 ```
 同理，还有删、改、replace等，操作基本相同
+
+##### mapping
+```
+#import "CKModel.h"
+#import "CKTest.h"
+
+@interface CKTestModel : CKModel<CKFmdbJsonSerializing>
+
+@property (nonatomic, copy) NSNumber<CKPrimaryKey> *index;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, copy) NSString *lastName;
+@property (nonatomic, copy) CKTest   *test;
+
+@end
+
+
+#import "CKTestModel.h"
+
+@implementation CKTestModel
+
++ (NSDictionary *)jsonKeyPathMapping{
+    return @{
+             @"index":@"ind",
+             @"name":@"ac",
+             @"lastName":@"bbb",
+             @"test.index":@"ccc",
+             };
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _test = [CKTest new];
+    }
+    return self;
+}
+
+@end
+
+    CKTestModel *model1 = [CKTestModel new];    
+    [model1 setValuesFromDictionary:@{@"ind":@1234,@"ac":@"nameValue",@"bbb":@"lastNameValue",@"ccc":@"indexValue"}];
+
+
+```
