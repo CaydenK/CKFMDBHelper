@@ -88,7 +88,7 @@
  *  @return 属性集合
  */
 - (NSSet *)propertySet{
-    return [NSSet setWithArray:[self propertyArray]];
+    return [NSSet setWithArray:[[self class] propertyArray]];
 }
 
 /**
