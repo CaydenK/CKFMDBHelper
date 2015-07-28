@@ -2,8 +2,8 @@
 //  NSObject+CKProperty.m
 //  FMDBHelper
 //
-//  Created by tcyx on 15/5/19.
-//  Copyright (c) 2015年 tcyx. All rights reserved.
+//  Created by caydenk on 15/5/19.
+//  Copyright (c) 2015年 caydenk. All rights reserved.
 //
 
 #import "NSObject+CKProperty.h"

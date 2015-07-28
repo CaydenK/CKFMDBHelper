@@ -2,8 +2,8 @@
 //  CKModel.m
 //  FMDBHelper
 //
-//  Created by tcyx on 15/5/19.
-//  Copyright (c) 2015年 tcyx. All rights reserved.
+//  Created by caydenk on 15/5/19.
+//  Copyright (c) 2015年 caydenk. All rights reserved.
 //
 
 #import "CKModel.h"
@@ -350,16 +350,8 @@ NSString * const kCKModelIndexDesc = @"desc";
     //    select * from sqlite_master
     //    PRAGMA  table_info(tableName)
     NSString *tableName = NSStringFromClass([self class]);
-    NSMutableString *query = [NSMutableString stringWithFormat:@"PRAGMA  table_info(%@)",tableName];
-    FMDatabase *db = [[CKManager shareManager] databaseWithName:CKDBNAME];
-    if (![db open]) {return;}
-    FMResultSet *rs=[db executeQuery:query];
-    NSMutableArray *oldColumnArray=[NSMutableArray array];
-    while ([rs next]) {
-        [oldColumnArray addObject:[rs stringForColumn:@"name"]];
-    }
-    [db close];
     NSMutableArray *propertyArray = [self propertyArray].mutableCopy;
+    NSArray *oldColumnArray = [self columnArrayWithTable:tableName];
     [propertyArray removeObjectsInArray:oldColumnArray];
     NSMutableArray *sqls = @[].mutableCopy;
     for (NSString *columnNew in propertyArray) {
@@ -367,6 +359,19 @@ NSString * const kCKModelIndexDesc = @"desc";
         [sqls addObject:sql];
     }
     [self executeUpdateWithMuchSql:sqls];
+}
+
++ (NSArray *)columnArrayWithTable:(NSString *)tableName {
+    NSMutableString *query = [NSMutableString stringWithFormat:@"PRAGMA  table_info(%@)",tableName];
+    FMDatabase *db = [[CKManager shareManager] databaseWithName:CKDBNAME];
+    if (![db open]) {return nil;}
+    FMResultSet *rs=[db executeQuery:query];
+    NSMutableArray *oldColumnArray=[NSMutableArray array];
+    while ([rs next]) {
+        [oldColumnArray addObject:[rs stringForColumn:@"name"]];
+    }
+    [db close];
+    return oldColumnArray;
 }
 
 #pragma mark

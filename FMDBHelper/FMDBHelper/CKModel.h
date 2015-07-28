@@ -2,8 +2,8 @@
 //  CKModel.h
 //  FMDBHelper
 //
-//  Created by tcyx on 15/5/19.
-//  Copyright (c) 2015年 tcyx. All rights reserved.
+//  Created by caydenk on 15/5/19.
+//  Copyright (c) 2015年 caydenk. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -89,6 +89,14 @@ extern NSString * const kCKModelIndexDesc;
  *  @return 是否成功
  */
 + (void)updateColumn;
+/**
+ *  获取表结构
+ *
+ *  @param tableName 表名
+ *
+ *  @return 表字段数组
+ */
++ (NSArray *)columnArrayWithTable:(NSString *)tableName;
 
 #pragma mark
 #pragma mark - Content Operate

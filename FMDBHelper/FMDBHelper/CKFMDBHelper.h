@@ -35,8 +35,11 @@
 #import "CKModel.h"
 #import "CKConditionMaker.h"
 #import "NSDictionary+CKExternal.h"
+#import "CKDictionary.h"
 
 
 #define CKDBNAME @"CityGamesInfo"
+
+#define CKDICTIONARY @"CKDictionary"
 
 #endif
