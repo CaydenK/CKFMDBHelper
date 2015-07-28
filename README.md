@@ -118,3 +118,15 @@
 
 
 ```
+
+####字典表的支持
+表是否已经创建不用在意，直接赋值，就会自动创建，然后尽管取值就行了，而且不用担心速度慢，都会直接异步操作好数据库
+
+```
+    CKDictionary *dict = [CKDictionary shareInstance];
+    if (!dict[@"key"]) {
+        [dict setObject:@"value" forKey:@"key"];
+    }
+    NSLog(@"%@",dict[@"key"]);
+
+```
