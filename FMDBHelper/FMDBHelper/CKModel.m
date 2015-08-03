@@ -46,7 +46,7 @@ NSString * const kCKModelIndexDesc = @"desc";
     while ([rs next]) {
         id item=[[[self class] alloc]init];
         for ( NSString *key in propertys) {
-            [item setValue:[rs stringForColumn:key]?:@"" forKey:key];
+            [item setValue:[rs stringForColumn:key] forKey:key];
         }
         [result addObject:item];
     }
@@ -92,7 +92,7 @@ NSString * const kCKModelIndexDesc = @"desc";
     while ([rs next]) {
         item=[[self alloc]init];
         for ( NSString *key in propertys) {
-            [item setValue:[rs stringForColumn:key]?:@"" forKey:key];
+            [item setValue:[rs stringForColumn:key] forKey:key];
         }
     }
     [db close];
@@ -755,16 +755,46 @@ NSString * const kCKModelIndexDesc = @"desc";
         NSString *propertyAttribute = [NSString stringWithUTF8String:property_getAttributes(property)];
         NSArray *array = [propertyAttribute componentsSeparatedByString:@","];
         NSString *firstItem = array.firstObject;
-        if ([@[@"Tq",@"Td",@"Tf",@"Ti",@"Ts",@"TQ",@"TD",@"TF",@"TI",@"TS"] containsObject:firstItem]) {
+        if ([@[@"tq",@"td",@"tf",@"ti",@"tb",@"ts",@"tl"] containsObject:[firstItem lowercaseString]]) {
             [super setValue:@0 forKey:key];
         }
-        else if ([@"Tc" isEqualToString:firstItem] || [@"TC" isEqualToString:firstItem]) {
+        else if ([@"tc" isEqualToString:[firstItem lowercaseString]]) {
             [super setValue:[NSNumber numberWithChar:' '] forKey:key];
         }
         else {
             Class cls = NSClassFromString([firstItem substringWithRange:NSMakeRange(3, firstItem.length - 4)]);
             id aValue = [[cls alloc]init];
-            [super setValue:aValue?:@"" forKey:key];
+            [super setValue:aValue forKey:key];
+        }
+    }
+    else if ([value isKindOfClass:[NSString class]]) {
+        objc_property_t property = class_getProperty([self class], [key UTF8String]);
+        NSString *propertyAttribute = [NSString stringWithUTF8String:property_getAttributes(property)];
+        if ([propertyAttribute hasPrefix:@"T@"] || [propertyAttribute hasPrefix:@"T{"]) {
+            [super setValue:value forKey:key];
+            return;
+        }
+        else {
+            propertyAttribute = [propertyAttribute lowercaseString];
+            NSNumber *num;
+            if ([propertyAttribute hasPrefix:@"ti"] || [propertyAttribute hasPrefix:@"tb"] || [propertyAttribute hasPrefix:@"tl"] || [propertyAttribute hasPrefix:@"tq"]){
+                num = [NSNumber numberWithInteger:[value integerValue]];
+            } else if ([propertyAttribute hasPrefix:@"tf"]){
+                num = [NSNumber numberWithFloat:[value floatValue]];
+            } else if([propertyAttribute hasPrefix:@"td"]) {
+                num = [NSNumber numberWithDouble:[value doubleValue]];
+//            } else if([propertyAttribute hasPrefix:@"tl"] || [propertyAttribute hasPrefix:@"tq"]){
+//                num = [NSNumber numberWithLong:[value integerValue]];
+            } else if ([propertyAttribute hasPrefix:@"tc"]) {
+                num = [NSNumber numberWithChar:[value charValue]];
+            } else if([propertyAttribute hasPrefix:@"ts"]){
+                num = [NSNumber numberWithShort:[value shortValue]];
+            } else {
+                [super setValue:value forKey:key];
+                return;
+            }
+            [super setValue:num forKey:key];
+            return;
         }
     }
     else {
