@@ -13,7 +13,7 @@
 #import "CKManager.h"
 #import "NSString+CKDB.h"
 #import "NSDictionary+CKExternal.h"
-
+#import <objc/runtime.h>
 
 /**
  *  正序
@@ -668,7 +668,7 @@ NSString * const kCKModelIndexDesc = @"desc";
     else{
         NSSet *propertySet = [self propertySet];
         for (NSString *property in propertySet) {
-            [self setValue:[dicts ckObjectForKey:property] forKey:property];
+            [self setValue:[dicts objectForKey:property] forKey:property];
         }
     }
 }
@@ -749,6 +749,29 @@ NSString * const kCKModelIndexDesc = @"desc";
     return value;
 }
 
+- (void)setValue:(id)value forKey:(NSString *)key {
+    if ((value == nil || [[NSNull null] isEqual:value])) {
+        objc_property_t property = class_getProperty([self class], [key UTF8String]);
+        NSString *propertyAttribute = [NSString stringWithUTF8String:property_getAttributes(property)];
+        NSArray *array = [propertyAttribute componentsSeparatedByString:@","];
+        NSString *firstItem = array.firstObject;
+        if ([@[@"Tq",@"Td",@"Tf",@"Ti",@"Ts",@"TQ",@"TD",@"TF",@"TI",@"TS"] containsObject:firstItem]) {
+            [super setValue:@0 forKey:key];
+        }
+        else if ([@"Tc" isEqualToString:firstItem] || [@"TC" isEqualToString:firstItem]) {
+            [super setValue:[NSNumber numberWithChar:' '] forKey:key];
+        }
+        else {
+            Class cls = NSClassFromString([firstItem substringWithRange:NSMakeRange(3, firstItem.length - 4)]);
+            id aValue = [[cls alloc]init];
+            [super setValue:aValue?:@"" forKey:key];
+        }
+    }
+    else {
+        [super setValue:value forKey:key];
+    }
+    
+}
 
 @end
 
