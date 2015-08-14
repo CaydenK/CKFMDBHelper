@@ -668,7 +668,9 @@ NSString * const kCKModelIndexDesc = @"desc";
     else{
         NSSet *propertySet = [self propertySet];
         for (NSString *property in propertySet) {
-            [self setValue:[dicts objectForKey:property] forKey:property];
+            if ([dicts.allKeys containsObject:property]) {
+                [self setValue:[dicts objectForKey:property] forKey:property];
+            }
         }
     }
 }

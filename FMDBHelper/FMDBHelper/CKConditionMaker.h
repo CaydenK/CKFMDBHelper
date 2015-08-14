@@ -124,5 +124,9 @@ typedef NS_ENUM(NSUInteger, CKConditionMakerOrderByType){
  *  字段长度
  */
 - (CKQueryMaker *(^)(NSString *,NSString *))length;
+/**
+ *  自定义列查询
+ */
+- (CKQueryMaker *(^)(NSString *,...))columns;
 
 @end

@@ -294,6 +294,26 @@ NSString *conditionMakerMap(CKConditionMakerOrderByType type){
         return self;
     };
 }
+/**
+ *  自定义列查询
+ */
+- (CKQueryMaker *(^)(NSString *,...))columns {
+    return ^CKQueryMaker *(NSString *column,...) {
+        NSMutableArray *columnArray = @[[NSString stringWithFormat:@"[%@]",column]].mutableCopy;
+        va_list list;
+        va_start(list, column);
+        while (1)
+        {
+            NSString *item = va_arg(list, NSString *);
+            if (item == nil) {break;}
+            [columnArray addObject:[NSString stringWithFormat:@"[%@]",item]];
+        }
+        va_end(list);
+        NSString *columnComp = [columnArray componentsJoinedByString:@","];
+        [self.sqlQueryDict setObject:columnComp forKey:@""];
+        return self;
+    };
+}
 
 #pragma mark
 #pragma mark - Get
