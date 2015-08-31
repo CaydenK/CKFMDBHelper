@@ -107,7 +107,8 @@ NSString * const kCKModelIndexDesc = @"desc";
 + (void)executeUpdateWithSql:(NSString *)sql{
     FMDatabaseQueue *queue = [[CKManager shareManager] databaseQueueWithName:CKDBNAME];
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        [db executeUpdate:sql];
+        BOOL success = [db executeUpdate:sql];
+        *rollback = !success;
     }];
 }
 /**
@@ -121,7 +122,10 @@ NSString * const kCKModelIndexDesc = @"desc";
     if (!queue) {return ;}
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         for (NSString *sql in sqls) {
-            [db executeUpdate:sql];
+            BOOL success = [db executeUpdate:sql];
+            if (!success) {
+                *rollback = YES;
+            }
         }
     }];
 }
